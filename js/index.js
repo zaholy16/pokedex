@@ -1,53 +1,106 @@
 "use strict"
 
-let d = document;
-let container = d.querySelector('.container');
+const container = document.querySelector('.container');
+const btnPages = document.querySelector('.btnPages');
+const select = document.querySelector('#select')
+let btnNext, btnPrevious;
+console.log('⏪⏩');
+let abilities = [];
+let types = [];
+let slot = '';
+let abilityString = '';
 
-const urlBase = "https://pokeapi.co/api/v2/"
+const urlPokemon = "https://pokeapi.co/api/v2";
 
-const getIDPokemon = async (id) => {
-    const response = await fetch(urlBase + `pokemon/${id} `)
-    const data = await response.json()
-    console.log(data)
-    drawPokemon(data)
-}
-
-const getPokemons = async (number) => {
-
-    for(let i=1; i<=number; i++){
-        getIDPokemon(i)
+const getPokemons = async (url) => {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        dataPokemons(data.results);
+        pagination(data.next, data.previous)
+    } catch (error) {
+        console.log(error);
     }
 }
 
-getPokemons(24);
+getPokemons(urlPokemon + `/pokemon`);
 
-const drawPokemon = (pokemon) => {
-    
-    let card = d.createElement('div')
+const dataPokemons = async (data) => {
+    container.innerHTML = ''; //Clear data
+    try {
+        for (const index of data) {
+            const response = await fetch(index.url);
+            const results = await response.json();
+            // console.log(results);
+            abilities = results.abilities;
+            types = results.types;
+            
+            // console.log(types);
+
+            abilities.forEach(ability => {
+                abilityString += ability.ability.name + ` | `;
+            });
+
+           drawCard(results.id, results.name.toUpperCase(), results.sprites.other.dream_world.front_default, types, abilityString, results.weight)
+           abilityString = '';
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const drawCard = (id, name, image, types, abilities, weight) => {
+
+    let card = document.createElement('div')
     card.classList.add('card')
 
-    let leftColumn = d.createElement('div')
+    let leftColumn = document.createElement('div')
     leftColumn.classList.add('left-column', 'background')
     leftColumn.innerHTML = ` 
-        <h2>#${pokemon.id.toString().padStart(3,0)}</h2>
-        <h3>${pokemon.name}</h3>`
+    <h2>#${id.toString().padStart(3,0)}</h2>
+    <h3>${name}</h3>`
 
-    let rightColumn = d.createElement('div')
+    let containerTypes = document.createElement('div');
+    containerTypes.classList.add('divTypes');
+ 
+    types.forEach(index => {
+        let imgTypes = document.createElement('img');
+        imgTypes.classList.add('imgType')
+        imgTypes.setAttribute('src', `./img/Pokémon_${index.type.name}.png`)
+        containerTypes.append(imgTypes);
+        leftColumn.append(containerTypes);
+    });
+
+    let rightColumn = document.createElement('div')
     rightColumn.classList.add('right-column')
     rightColumn.innerHTML = `
-        <img src="${pokemon.sprites.front_default}" alt="">
-                
-        <div class="abilities">
-            <h4>Abilities: </h4>
-        </div>
-        
-        <h4 id="weight">Weight: <i>${pokemon.weight}</i></h4>
-    `
+    <img src="${image}" alt="">
+            
+    <div class="abilities">
+        <h5>Abilities: ${abilities}</h5>
+    </div>
+    
+    <h4 id="weight">Weight: <i>${weight}</i></h4>`
 
     card.appendChild(leftColumn)
     card.appendChild(rightColumn)
     container.append(card)
+
 }
 
+const pagination = (next, previous) => {
+    btnNext = next ? `<button class="btn" data-url="${next}">⏩</button>` : ''
 
+    btnPrevious = previous ? `<button class="btn" data-url="${previous}">⏪</button>` : ''
+    btnPages.innerHTML = btnPrevious + " " + btnNext;
+}
+
+btnPages.addEventListener('click', (e) => {
+    if(e.target.classList.contains('btn')){
+        let value = e.target.dataset.url;
+        // console.log(value)     
+        getPokemons(value)
+    }
+})
 
