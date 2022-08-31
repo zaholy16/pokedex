@@ -19,7 +19,7 @@ const getPokemons = async (number) => {
     }
 }
 
-getPokemons(20);
+getPokemons(24);
 
 const drawPokemon = (pokemon) => {
     
@@ -27,15 +27,15 @@ const drawPokemon = (pokemon) => {
     card.classList.add('card')
 
     let leftColumn = d.createElement('div')
-    leftColumn.classList.add('left-column', 'background1-left-column')
+    leftColumn.classList.add('left-column', 'background')
     leftColumn.innerHTML = ` 
         <h2>#${pokemon.id.toString().padStart(3,0)}</h2>
-        <h3 id="name-pokemon">${pokemon.name}</h3>`
+        <h3>${pokemon.name}</h3>`
 
     let rightColumn = d.createElement('div')
     rightColumn.classList.add('right-column')
     rightColumn.innerHTML = `
-        <img id="image" src="${pokemon.sprites.front_default}" alt="">
+        <img src="${pokemon.sprites.front_default}" alt="">
                 
         <div class="abilities">
             <h4>Abilities: </h4>
