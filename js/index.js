@@ -96,7 +96,7 @@ const drawCard = (id, name, image, types, abilities, weight) => {
 const pagination = (next, previous) => {
     btnNext = next ? `<img class="btn" data-url="${next}" src="./img/next.svg" />` : ''
 
-    btnPrevious = previous ? `<img class="btn" data-url="${next}" src="./img/back.svg" />` : ''
+    btnPrevious = previous ? `<img class="btn" data-url="${previous}" src="./img/back.svg" />` : ''
     btnPages.innerHTML = btnPrevious + " " + btnNext;
 }
 
