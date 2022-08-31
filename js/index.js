@@ -4,7 +4,6 @@ const container = document.querySelector('.container');
 const btnPages = document.querySelector('.btnPages');
 const select = document.querySelector('#select')
 let btnNext, btnPrevious;
-console.log('⏪⏩');
 let abilities = [];
 let types = [];
 let slot = '';
@@ -31,18 +30,12 @@ const dataPokemons = async (data) => {
         for (const index of data) {
             const response = await fetch(index.url);
             const results = await response.json();
-            // console.log(results);
+
             abilities = results.abilities;
             types = results.types;
-            
-            // console.log(types);
+        
+           drawCard(results.id, results.name.toUpperCase(), results.sprites.other.dream_world.front_default, types, abilities, results.weight)
 
-            abilities.forEach(ability => {
-                abilityString += ability.ability.name + ` | `;
-            });
-
-           drawCard(results.id, results.name.toUpperCase(), results.sprites.other.dream_world.front_default, types, abilityString, results.weight)
-           abilityString = '';
         }
 
     } catch (error) {
@@ -62,7 +55,7 @@ const drawCard = (id, name, image, types, abilities, weight) => {
     <h3>${name}</h3>`
 
     let containerTypes = document.createElement('div');
-    containerTypes.classList.add('divTypes');
+    containerTypes.classList.add('types');
  
     types.forEach(index => {
         let imgTypes = document.createElement('img');
@@ -77,11 +70,22 @@ const drawCard = (id, name, image, types, abilities, weight) => {
     rightColumn.innerHTML = `
     <img src="${image}" alt="">
             
-    <div class="abilities">
-        <h5>Abilities: ${abilities}</h5>
-    </div>
+    <div class="containerWeight">
+        <img class="weight" src="./img/weight.svg" />
+        <h4 id="weight"><i>${weight}</i></h4>
+    </div>`
+
+    let containerAbility = document.createElement('div')
+    containerAbility.classList.add('abilities');
     
-    <h4 id="weight">Weight: <i>${weight}</i></h4>`
+    abilities.forEach(index => {
+        console.log(index.ability.name)
+        let containerAbility = document.createElement('div')
+        containerAbility.classList.add('abilities');
+        containerAbility.innerText = index.ability.name;
+        rightColumn.append(containerAbility);
+    });
+    
 
     card.appendChild(leftColumn)
     card.appendChild(rightColumn)
@@ -90,16 +94,15 @@ const drawCard = (id, name, image, types, abilities, weight) => {
 }
 
 const pagination = (next, previous) => {
-    btnNext = next ? `<button class="btn" data-url="${next}">⏩</button>` : ''
+    btnNext = next ? `<img class="btn" data-url="${next}" src="./img/next.svg" />` : ''
 
-    btnPrevious = previous ? `<button class="btn" data-url="${previous}">⏪</button>` : ''
+    btnPrevious = previous ? `<img class="btn" data-url="${next}" src="./img/back.svg" />` : ''
     btnPages.innerHTML = btnPrevious + " " + btnNext;
 }
 
 btnPages.addEventListener('click', (e) => {
     if(e.target.classList.contains('btn')){
         let value = e.target.dataset.url;
-        // console.log(value)     
         getPokemons(value)
     }
 })
