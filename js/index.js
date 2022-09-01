@@ -47,15 +47,6 @@ const getTypes = async (url) => {
     }
 }
 
-// const getPokemonTypes = async (type) => {
-//     try {
-//         if(type ===)
-//        console.log(typesSelect)
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
-
 const dataPokemons = async (data) => {
     container.innerHTML = ''; //Clear data
     try {
@@ -88,7 +79,7 @@ const dataTypes = async (value) => {
             pokemonUrl = element.pokemon.url
             const response = await fetch(pokemonUrl)
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
 
             abilities = data.abilities;
             types = data.types;
@@ -169,6 +160,6 @@ btnPages.addEventListener('click', (e) => {
 select.addEventListener('change', async(e) => {
 
     const value = e.target.value;
-    console.log(value);
+    // console.log(value);
     dataTypes(value);
 })
