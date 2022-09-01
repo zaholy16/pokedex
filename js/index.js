@@ -6,40 +6,99 @@ const select = document.querySelector('#select')
 let btnNext, btnPrevious;
 let abilities = [];
 let types = [];
-let slot = '';
+let typesSelect = [];
+let pokemons = [];
+let pokemonUrl = [];
 let abilityString = '';
 
-const urlPokemon = "https://pokeapi.co/api/v2";
+const urlPokemon = "https://pokeapi.co/api/v2/pokemon";
+const urlType = "https://pokeapi.co/api/v2/type";
 
 const getPokemons = async (url) => {
     try {
         const response = await fetch(url);
         const data = await response.json();
         dataPokemons(data.results);
-        pagination(data.next, data.previous)
+        pagination(data.next, data.previous);
+        getTypes(urlType);
     } catch (error) {
         console.log(error);
     }
 }
 
-getPokemons(urlPokemon + `/pokemon`);
+getPokemons(urlPokemon);
+
+const getTypes = async (url) => {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        // console.log(data.results); 
+        typesSelect = data.results;
+    
+        typesSelect.forEach((element,i) => {
+            // console.log(element.url);
+            let option = document.createElement('option')
+            option.setAttribute('value', i+1)
+            option.innerText = element.name;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// const getPokemonTypes = async (type) => {
+//     try {
+//         if(type ===)
+//        console.log(typesSelect)
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
 
 const dataPokemons = async (data) => {
     container.innerHTML = ''; //Clear data
     try {
         for (const index of data) {
+            // console.log(index.url)
             const response = await fetch(index.url);
             const results = await response.json();
 
             abilities = results.abilities;
             types = results.types;
+            // console.log(types)
         
            drawCard(results.id, results.name.toUpperCase(), results.sprites.other.dream_world.front_default, types, abilities, results.weight)
-
         }
 
     } catch (error) {
         console.log(error);
+    }
+}
+
+const dataTypes = async (value) => {
+    container.innerHTML = ''; //Clear data
+    try {
+        const response = await fetch(urlType+`/${value}/`)
+        const data = await response.json()
+        // console.log(data.pokemon)
+        pokemons = data.pokemon;
+        
+        pokemons.forEach(async (element) => { 
+            pokemonUrl = element.pokemon.url
+            const response = await fetch(pokemonUrl)
+            const data = await response.json()
+            console.log(data)
+
+            abilities = data.abilities;
+            types = data.types;
+           
+           drawCard(data.id, data.name.toUpperCase(), data.sprites.other.dream_world.front_default, types, abilities, data.weight)
+        });
+
+
+    } catch (error) {
+        console.log(error)
     }
 }
 
@@ -79,7 +138,7 @@ const drawCard = (id, name, image, types, abilities, weight) => {
     containerAbility.classList.add('abilities');
     
     abilities.forEach(index => {
-        console.log(index.ability.name)
+        // console.log(index.ability.name)
         let containerAbility = document.createElement('div')
         containerAbility.classList.add('abilities');
         containerAbility.innerText = index.ability.name;
@@ -107,3 +166,9 @@ btnPages.addEventListener('click', (e) => {
     }
 })
 
+select.addEventListener('change', async(e) => {
+
+    const value = e.target.value;
+    console.log(value);
+    dataTypes(value);
+})
